@@ -40,11 +40,8 @@ public class Agente implements PontosCardeais {
         // @todo a cada acao escolher uma acao {N, NE, L, SE, S, SO, O, NO}
         //executarIr(N);
         
-        //classe para números aleatórios
-        Random direcao_aleatoria = new Random();
-        
         //vai para uma direção aleatório de 0 a 7
-        executarIr(direcao_aleatoria.nextInt(8));
+        executarIr(new Random().nextInt(8));
         
         return 1; // Se retornar -1, encerra o agente
     }
