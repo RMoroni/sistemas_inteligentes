@@ -35,27 +35,6 @@ public class Problema implements PontosCardeais {
         this.maxLin = maxLin;
         this.maxCol = maxCol;
         this.custo = new float [maxLin*maxCol][8];
-        colocarCrencasParedes();
-    }
-
-    /**
-     * Define as crencas do agente a respeito das paredes do labirinto
-     */
-    public void colocarCrencasParedes(){
-        crencaLabir.porParedeHorizontal(0, 1, 0);
-        crencaLabir.porParedeHorizontal(4, 7, 0);
-        crencaLabir.parede[1][0] = 1;
-        crencaLabir.parede[1][7] = 1;
-        crencaLabir.porParedeHorizontal(3, 5, 2);
-        crencaLabir.porParedeHorizontal(3, 5, 3);
-        crencaLabir.parede[3][7] = 1;
-        crencaLabir.porParedeVertical(5, 8, 1);
-        crencaLabir.parede[5][2] = 1;
-        crencaLabir.parede[8][2] = 1;
-        crencaLabir.parede[5][5] = 1;
-        crencaLabir.porParedeHorizontal(4, 5, 6);
-        crencaLabir.parede[7][4] = 1;
-        crencaLabir.porParedeVertical(5, 7, 7);
     }
     
     /**

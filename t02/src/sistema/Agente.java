@@ -26,11 +26,32 @@ public class Agente implements PontosCardeais {
         
         //crencas do agente a respeito do labirinto
         prob.criarLabirinto(9, 9);
-               
+        colocarCrencasParedes();
+        
         //crencas do agente: Estado inicial, objetivo e atual
         estAtu = new Estado(8,0);
         prob.defEstIni(8, 0);
         prob.defEstObj(2, 8);
+    }
+    
+    /**
+     * Define as crencas do agente a respeito das paredes do labirinto
+     */
+    public void colocarCrencasParedes(){
+        prob.crencaLabir.porParedeHorizontal(0, 1, 0);
+        prob.crencaLabir.porParedeHorizontal(4, 7, 0);
+        prob.crencaLabir.parede[1][0] = 1;
+        prob.crencaLabir.parede[1][7] = 1;
+        prob.crencaLabir.porParedeHorizontal(3, 5, 2);
+        prob.crencaLabir.porParedeHorizontal(3, 5, 3);
+        prob.crencaLabir.parede[3][7] = 1;
+        prob.crencaLabir.porParedeVertical(5, 8, 1);
+        prob.crencaLabir.parede[5][2] = 1;
+        prob.crencaLabir.parede[8][2] = 1;
+        prob.crencaLabir.parede[5][5] = 1;
+        prob.crencaLabir.porParedeHorizontal(4, 5, 6);
+        prob.crencaLabir.parede[7][4] = 1;
+        prob.crencaLabir.porParedeVertical(5, 7, 7);
     }
     
     /**Escolhe qual ação (UMA E SOMENTE UMA) será executada em um ciclo de raciocínio
