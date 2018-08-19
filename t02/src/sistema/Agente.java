@@ -14,10 +14,7 @@ public class Agente implements PontosCardeais {
     Model model;
     Problema prob; // formulacao do problema
     Estado estAtu; // guarda o estado atual (posição atual do agente)
-    /* @todo T2: fazer uma sequencia de acoes a ser executada em deliberar
-       e armazena-la no atributo plan[]
-    */
-    int plan[];
+    int plan[] = {N,N,N,N,L,L,L,L,L,L,L,L,N,N}; //sequencia de planos que o agente deve seguir
     double custo;
     static int ct = -1;
            
@@ -29,9 +26,12 @@ public class Agente implements PontosCardeais {
         
         //@todo T2: crencas do agente a respeito do labirinto
         prob.criarLabirinto(9, 9);
-               
+                      
         //@todo T2: crencas do agente: Estado inicial, objetivo e atual
         // utilizar atributos da classe Problema
+        estAtu = new Estado(8, 0);
+        prob.defEstIni(8, 0);
+        prob.defEstObj(2, 8);
         
     }
     
@@ -42,11 +42,27 @@ public class Agente implements PontosCardeais {
         ct++;
         //@todo T2: executar o plano de acoes: SOMENTE UMA ACAO POR CHAMADA DESTE METODO
         // Ao final do plano, verifique se o agente atingiu o estado objetivo verificando
-        // com o teste de objetivo
+        // com o teste de objetivo        
+        
         
         
         //@todo T2: imprimir o que foi pedido
-
+        System.out.println("Estado atual: " + estAtu.getString());
+        System.out.println("Ações possiveis: " + prob.acoesPossiveis(estAtu));
+        
+        //executa ação
+        executarIr(plan[ct+1]);
+        System.out.println("ct = " + ct + " Ação escolhida: " + acao[plan[ct+1]]);
+        
+        //atualiza o custo
+        custo = prob.obterCustoAcao(estAtu, plan[ct+1]);
+        System.out.println("Custo acumulado: " + custo);
+        
+        
+        
+        //se chegou no objetivo, finaliza
+        if (prob.testeObjetivo(prob.estObj))
+            return -1;
         
         return 1;
     }
