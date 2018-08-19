@@ -48,5 +48,10 @@ public class Main {
         while (ag.deliberar() != -1) {  
             model.desenhar(); 
         }
+        if(ag.prob.testeObjetivo(ag.estAtu)){
+            System.out.println("Objetivo alcançado!");
+            System.out.println("Custo final: " + ag.custo);
+        }else
+            System.out.println("Objetivo não alcançado!");
     }
 }
