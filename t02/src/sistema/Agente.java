@@ -32,38 +32,40 @@ public class Agente implements PontosCardeais {
         estAtu = new Estado(8, 0);
         prob.defEstIni(8, 0);
         prob.defEstObj(2, 8);
-        
+        custo = 0.0;
     }
     
     /**Escolhe qual ação (UMA E SOMENTE UMA) será executada em um ciclo de raciocínio
      * @return 1 enquanto o plano não acabar; -1 quando acabar
      */
     public int deliberar() {
-        ct++;
-        //@todo T2: executar o plano de acoes: SOMENTE UMA ACAO POR CHAMADA DESTE METODO
-        // Ao final do plano, verifique se o agente atingiu o estado objetivo verificando
-        // com o teste de objetivo        
+        ct++;      
         
-        
-        
-        //@todo T2: imprimir o que foi pedido
         System.out.println("Estado atual: " + estAtu.getString());
-        System.out.println("Ações possiveis: " + prob.acoesPossiveis(estAtu));
+        System.out.println("Ações possiveis: ");
+        //dá erro aqui
+        //for (int i=0; i < 8; i++)
+        //    System.out.print(acao[prob.acoesPossiveis(estAtu)[i]]);
+  
+        //executa ação, o ct já existia então eu uso ele como contador
+        executarIr(plan[ct]);
+        System.out.println("ct = " + ct + " Ação escolhida: " + acao[plan[ct]]);
         
-        //executa ação
-        executarIr(plan[ct+1]);
-        System.out.println("ct = " + ct + " Ação escolhida: " + acao[plan[ct+1]]);
-        
-        //atualiza o custo
-        custo = prob.obterCustoAcao(estAtu, plan[ct+1]);
+        //atualiza o custo, ele tem dois metodos para obter custo
+        //nesse que tem 3 param parece ter a conta do jeito que a gente
+        //espera, por isso repeti o estAtu...
+        custo += prob.obterCustoAcao(estAtu, plan[ct], estAtu);
         System.out.println("Custo acumulado: " + custo);
         
-        
-        
+        //atualiza estado atual do agente
+        estAtu = prob.suc(estAtu, plan[ct]);
+
         //se chegou no objetivo, finaliza
-        if (prob.testeObjetivo(prob.estObj))
+        if (prob.testeObjetivo(estAtu))
+        {
+            System.out.println("fim!");
             return -1;
-        
+        }
         return 1;
     }
     

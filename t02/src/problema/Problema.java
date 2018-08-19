@@ -70,7 +70,8 @@ public class Problema implements PontosCardeais {
         int incrLin[] = {-1,-1,0,1,1,1,0,-1};
         int incrCol[] = {0,1,1,1,0,-1,-1,-1};
         
-        //@TODO IMPLEMENTAR O MÉTODO SUC (T02)
+        //incrementa de acordo com ação...
+        est.setLinCol(lin + incrLin[acao], col + incrCol[acao]);
         return est; //adicionei apenas para tirar o erro
     }
 
