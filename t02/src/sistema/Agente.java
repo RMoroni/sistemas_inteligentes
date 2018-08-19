@@ -14,59 +14,58 @@ public class Agente implements PontosCardeais {
     Model model;
     Problema prob; // formulacao do problema
     Estado estAtu; // guarda o estado atual (posição atual do agente)
-    int plan[] = {N,N,N,N,L,L,L,L,L,L,L,L,N,N}; //sequencia de planos que o agente deve seguir
-    double custo;
+    
+    //sequencia de acoes a ser executada pelo agente
+    int plan[] = {N,N,N,N,L,L,L,L,L,NE,NE,L};
+    double custo = 0;
     static int ct = -1;
            
     public Agente(Model m) {
         this.model = m;
         prob = new Problema();
         
-        //@todo T2: Aqui vc deve preencher a formulacao do problema 
-        
-        //@todo T2: crencas do agente a respeito do labirinto
+        //crencas do agente a respeito do labirinto
         prob.criarLabirinto(9, 9);
-                      
-        //@todo T2: crencas do agente: Estado inicial, objetivo e atual
-        // utilizar atributos da classe Problema
-        estAtu = new Estado(8, 0);
+               
+        //crencas do agente: Estado inicial, objetivo e atual
+        estAtu = new Estado(8,0);
         prob.defEstIni(8, 0);
         prob.defEstObj(2, 8);
-        custo = 0.0;
     }
     
     /**Escolhe qual ação (UMA E SOMENTE UMA) será executada em um ciclo de raciocínio
      * @return 1 enquanto o plano não acabar; -1 quando acabar
      */
     public int deliberar() {
-        ct++;      
+        ct++;
         
-        System.out.println("Estado atual: " + estAtu.getString());
-        System.out.println("Ações possiveis: ");
-        //dá erro aqui
-        //for (int i=0; i < 8; i++)
-        //    System.out.print(acao[prob.acoesPossiveis(estAtu)[i]]);
-  
-        //executa ação, o ct já existia então eu uso ele como contador
-        executarIr(plan[ct]);
-        System.out.println("ct = " + ct + " Ação escolhida: " + acao[plan[ct]]);
-        
-        //atualiza o custo, ele tem dois metodos para obter custo
-        //nesse que tem 3 param parece ter a conta do jeito que a gente
-        //espera, por isso repeti o estAtu...
-        custo += prob.obterCustoAcao(estAtu, plan[ct], estAtu);
-        System.out.println("Custo acumulado: " + custo);
-        
-        //atualiza estado atual do agente
-        estAtu = prob.suc(estAtu, plan[ct]);
-
-        //se chegou no objetivo, finaliza
-        if (prob.testeObjetivo(estAtu))
-        {
-            System.out.println("fim!");
-            return -1;
+        //imprime o que foi pedido
+        System.out.println("estado atual: " + estAtu.getString());
+        System.out.print("acoes possiveis: { ");
+        int acoesPossiveis[] = prob.acoesPossiveis(estAtu);
+        int i;
+        for(i=0; i<8; i++){
+            if(acoesPossiveis[i] == 0)
+                System.out.print(acao[i] + " ");           
         }
-        return 1;
+        System.out.println("}");
+        System.out.println("ct = " + ct + " de " + (plan.length-1) + " acao escolhida = " + acao[plan[ct]]);
+        
+        //executa o plano de acoes: SOMENTE UMA ACAO POR CHAMADA DESTE METODO
+        // Ao final do plano, verifique se o agente atingiu o estado objetivo verificando
+        // com o teste de objetivo
+        executarIr(plan[ct]);
+        
+        //imprime o que foi pedido                          
+        System.out.println("custo ate o momento: " + custo);
+        //calcula custo acumulado após executar a ação
+        custo += prob.obterCustoAcao(estAtu, plan[ct], prob.suc(estAtu, plan[ct]));
+        System.out.println();
+        
+        if(ct == plan.length-1)
+            return -1;
+        else
+            return 1;
     }
     
     /**Funciona como um driver ou um atuador: envia o comando para
@@ -86,4 +85,3 @@ public class Agente implements PontosCardeais {
         return new Estado(pos[0], pos[1]);
     }
 }    
-
