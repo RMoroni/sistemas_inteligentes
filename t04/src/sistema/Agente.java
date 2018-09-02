@@ -3,6 +3,7 @@ package sistema;
 import ambiente.*;
 import problema.*;
 import comuns.*;
+import arvore.*;
 import static comuns.PontosCardeais.*;
 
 /**
@@ -16,7 +17,9 @@ public class Agente implements PontosCardeais {
     Estado estAtu; // guarda o estado atual (posição atual do agente)
     
     //sequencia de acoes a ser executada pelo agente
-    int plan[] = {N,N,N,N,L,L,L,L,L,NE,NE,L};
+    //int plan[] = {N,N,N,N,L,L,L,L,L,NE,NE,L};
+    int plan[];
+    int plan_length = 20; //tamanho do vetor de plano
     double custo = 0;
     static int ct = -1;
            
@@ -31,7 +34,10 @@ public class Agente implements PontosCardeais {
         estAtu = new Estado(8,0);
         prob.defEstIni(8, 0);
         prob.defEstObj(2, 8);
+        
+        plan = busca_ah1();
     }
+    
     
     /**Escolhe qual ação (UMA E SOMENTE UMA) será executada em um ciclo de raciocínio
      * @return 1 enquanto o plano não acabar; -1 quando acabar
@@ -41,14 +47,14 @@ public class Agente implements PontosCardeais {
         
         //imprime o que foi pedido
         System.out.println("estado atual: " + estAtu.getString());
-        System.out.print("acoes possiveis: { ");
+        /*System.out.print("acoes possiveis: { ");
         int acoesPossiveis[] = prob.acoesPossiveis(estAtu);
         int i;
         for(i=0; i<8; i++){
             if(acoesPossiveis[i] == 0)
                 System.out.print(acao[i] + " ");           
         }
-        System.out.println("}");
+        System.out.println("}");*/
         System.out.println("ct = " + ct + " de " + (plan.length-1) + " acao escolhida = " + acao[plan[ct]]);
         
         //executa o plano de acoes: SOMENTE UMA ACAO POR CHAMADA DESTE METODO
@@ -57,12 +63,12 @@ public class Agente implements PontosCardeais {
         executarIr(plan[ct]);
         
         //imprime o que foi pedido                          
-        System.out.println("custo ate o momento: " + custo);
+        //System.out.println("custo ate o momento: " + custo);
         //calcula custo acumulado após executar a ação
-        custo += prob.obterCustoAcao(estAtu, plan[ct], prob.suc(estAtu, plan[ct]));
+        //custo += prob.obterCustoAcao(estAtu, plan[ct], prob.suc(estAtu, plan[ct]));
         System.out.println();
         
-        if(ct == plan.length-1)
+        if(ct == plan_length-1)
             return -1;
         else
             return 1;
