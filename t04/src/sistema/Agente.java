@@ -4,7 +4,6 @@ import ambiente.*;
 import arvore.TreeNode;
 import problema.*;
 import comuns.*;
-import arvore.*;
 import static comuns.PontosCardeais.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -36,7 +35,6 @@ public class Agente implements PontosCardeais {
         prob.defEstIni(8, 0);
         prob.defEstObj(2, 8);
         
-        plan = busca_ah1();
         //crencas do agente a respeito do labirinto
         prob.criarLabirinto(9, 9);
         colocarCrencasParedes();
@@ -121,7 +119,8 @@ public class Agente implements PontosCardeais {
     public void executaBusca(String escolha){
         if(escolha.equals("Custo-uniforme"))
             buscaCustoUniforme();
-        
+        else
+            busca_ah1();
     }
     
     /**
@@ -191,6 +190,55 @@ public class Agente implements PontosCardeais {
             pai = pai.getParent();
         }
         
+    }
+    public void busca_ah1()
+    {
+        plan = new int[20];
+        int fn[] = new int[8];
+        int acao[] = new int[8]; 
+        
+        int count_plano = 0, count_fronteira = 0, menor, menor_indice=0;
+        double distancia_euclidiana, gn; //variaveis para calcular fn
+        
+        Estado estado = estAtu; //inicializo o estado que irei utilizar para buscar
+        //Estado fronteira[] = new Estado[8]; //minha fronteira é um vetor de estados
+        
+        while (prob.testeObjetivo(estado))
+        {
+            int acoesPossiveis[] = prob.acoesPossiveis(estado);
+            
+            for(int i=0; i<8; i++)
+            {
+                if(acoesPossiveis[i] == 0)
+                {
+                    //fronteira[count_fronteira] = prob.suc(estado, i); //coloco o estado na fronteira
+                    acao[count_fronteira] = i; //salvo a ação relacionada com o possível destino
+                    
+                    //calculo a distancia euclidiana, será o meu hn
+                    distancia_euclidiana = Math.sqrt(
+                            Math.pow(prob.suc(estado, i).getLin() - prob.estObj.getLin(), 2)
+                            + Math.pow(prob.suc(estado, i).getCol() - prob.estObj.getCol(), 2)
+                    );
+                    gn = prob.obterCustoAcao(estado, i, prob.suc(estado, i)); //custo para chegar em n
+                    fn[count_fronteira] = (int)(gn + distancia_euclidiana); //salvo o fn relacionado com o possivel destino
+                    count_fronteira++; //incrementa o count   
+                }          
+            }
+            menor = Integer.MAX_VALUE; //inicializo o menor valor
+            for(int i=0; i<count_fronteira; i++) //para cada elemento na fronteira
+            {
+                if (fn[i] <= menor) //busco qual tem o menor fn
+                {
+                    menor = fn[i]; //salvo o valor fn que é menor
+                    menor_indice = i; //preciso salvar o indice para achar a ação depois
+                }
+            }
+            estado = prob.suc(estado, acao[menor_indice]); //atualizo meu estado
+            plan[count_plano] = acao[count_fronteira]; //coloco a ação escolhida no plano
+            count_plano++; //incrementa count do plano
+            count_fronteira = 0; //zera count da fronteira
+        }
+        this.plan_length = count_plano;
     }
 }    
 
