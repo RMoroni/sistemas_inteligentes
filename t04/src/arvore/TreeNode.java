@@ -18,7 +18,7 @@ public class TreeNode {
     private float gn;  // g(n) custo acumulado até o nó n
     private float hn;  // h(n) heurística a partir do nó n
     private Estado st;  // estado par <linha, coluna>
-    private int   action; // acao que levou ao estado 
+    private int action; // acao que levou ao estado 
 
     public TreeNode(TreeNode pai) {
         this.parent = pai;
@@ -35,6 +35,10 @@ public class TreeNode {
         this.st = est;
     }
 
+    public void setDepth(int depth) {
+        this.depth = depth;
+    }
+    
     public List<TreeNode> getChildren() {
         return children;
     }
