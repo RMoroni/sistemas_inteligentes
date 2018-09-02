@@ -6,6 +6,7 @@
 package sistema;
 
 import ambiente.*;
+import javax.swing.JOptionPane;
 
 /**
  *
@@ -41,13 +42,22 @@ public class Main {
         // desenha labirinto
         model.desenhar(); 
         
+        //escolha da busca pelo usuário para montar o plano de ação do agente
+        Object[] opcoes = { "Custo-uniforme", "A* com h1", "A* com h2"};
+        String resposta;
+        resposta = (String) JOptionPane. showInputDialog(null, "Qual busca deve ser executada ?", 
+                "Plano de ação do agente", JOptionPane.QUESTION_MESSAGE, null, opcoes, null);
+        ag.executaBusca(resposta);
+                    
         // agente escolhe proxima açao e a executa no ambiente (modificando
         // o estado do labirinto porque ocupa passa a ocupar nova posicao)
-        
         System.out.println("\n*** Inicio do ciclo de raciocinio do agente ***\n");
         while (ag.deliberar() != -1) {  
             model.desenhar(); 
         }
+        
+        //ao terminar de executar o plano é testado se o estado objetivo
+        //foi alcançado
         if(ag.prob.testeObjetivo(ag.estAtu)){
             System.out.println("Objetivo alcançado!");
             System.out.println("Custo final: " + ag.custo);
