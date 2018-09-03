@@ -23,7 +23,6 @@ public class Agente implements PontosCardeais {
     //sequencia de acoes a ser executada pelo agente
     //int plan[] = {N,N,N,N,L,L,L,L,L,NE,NE,L};
     int plan[] = {};
-    //int plan_length = 20; //tamanho do vetor de plano
     double custo = 0;
     static int ct = -1;
            
@@ -38,7 +37,7 @@ public class Agente implements PontosCardeais {
         
         //crencas do agente a respeito do labirinto
         prob.criarLabirinto(9, 9);
-        colocarCrencasParedes();
+        //colocarCrencasParedes();
     }
     
     
@@ -194,63 +193,79 @@ public class Agente implements PontosCardeais {
     }
     public void busca_ah1()
     {
-        plan = new int[20];
         double distancia_euclidiana, gn; //variaveis para calcular fn
         
-        //criando o nó pai da árvore
+        //criando o nó raiz da árvore
         TreeNode raiz = new TreeNode(null);
-        raiz.setState(estAtu);
+        raiz.setState(estAtu); //inicia com estado do agente
         raiz.setAction(-1);
         raiz.setDepth(0);
-        raiz.setGn(0);
-        raiz.setHn(0);
-        raiz.setGnHn(raiz.getGn(), raiz.getHn());
+        raiz.setGn(0); //custo é 0
+        raiz.setHn(0); //hn tbm
+        //raiz.setGnHn(raiz.getGn(), raiz.getHn());
         
         //arvore de busca
         List<TreeNode> arvore = new ArrayList<>();
         List<TreeNode> fronteira = new ArrayList<>();
-        arvore.add(raiz);
-        TreeNode pai;
-        pai = raiz;
+        arvore.add(raiz); //adiciona a raiz na árvore
+        TreeNode pai; //pai será um 'nó auxiliar'
+        pai = raiz; //ele começão sendo a raiz da árvore
         
+        //enquanto o pai não for o objetivo...
         while (!prob.testeObjetivo(pai.getState()))
         {
+            //busco as ações possíveis para o estado do pai
             int acoesPossiveis[] = prob.acoesPossiveis(pai.getState());
             
+            //para cada ação possível
             for(int i=0; i<8; i++)
             {
+                //se for válida
                 if(acoesPossiveis[i] == 0)
                 {
-                    //para cada ação possível, 
+                    //crio um nó como filho...
                     TreeNode node = new TreeNode(pai);
+                    //o estado dele é o estado sucessor da ação atual a partir do estado do pai
                     node.setState(prob.suc(pai.getState(), i));
+                    //TODO: imprimindo o prob.suc é possível perceber que tem algo estranho, ele retorna coisas negativas...
+                    System.out.println("Estado: " + prob.suc(pai.getState(), i));
+                    //a ação dele é a ação atual...
                     node.setAction(i);
+                    //profundidade é a do pai + 1
                     node.setDepth(pai.getDepth() + 1);
                     
-                    //calculo a distancia euclidiana, será o meu hn
+                    //calculo a distancia euclidiana até o objetivo, será o meu hn
                     distancia_euclidiana = Math.sqrt(
                             Math.pow(prob.suc(pai.getState(), i).getLin() - prob.estObj.getLin(), 2)
                             + Math.pow(prob.suc(pai.getState(), i).getCol() - prob.estObj.getCol(), 2)
                     );
-                    gn = prob.obterCustoAcao(pai.getState(), i, node.getState());
-                    
+                    //meu gn é o custo do pai + o custo para chegar no próximo estado
+                    gn = pai.getFn() + prob.obterCustoAcao(pai.getState(), i, node.getState());
+                    //seta gn e hn
                     node.setGn((float) gn);
                     node.setHn((float) distancia_euclidiana);
                     //node.setGnHn(node.getGn(), node.getHn());
+                    //adiciona o nó na árvore
                     arvore.add(node);
+                    //adiciona o nó na fronteira
                     fronteira.add(node);
                 }          
             }
+            //vou buscar o próximo 'pai', inicializo com o primeiro nó na fronteira
             pai = fronteira.get(0);
+            //para cada nó na fronteira
             for(TreeNode node : fronteira){
+                //quem tiver o menor fn será o escolhido
                 if(node.getFn() < pai.getFn())
                     pai = node;
             }
             fronteira.remove(pai); //remove o nó escolhido para expandir
-            
         }
         //preenche custo total da busca e o plano de ação encontrado
         custo = pai.getFn();
+        //vamos percorrer o vetor ao contrário, então a partir do
+        //último nó pai, ele vai 'subindo' na árvore, olhando o pai
+        //e salvando no plan[] a ação
         for(int i=pai.getDepth(); i>0; i--){
             plan[i] = pai.getAction();
             pai = pai.getParent();
