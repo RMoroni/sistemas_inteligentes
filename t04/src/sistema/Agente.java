@@ -2,6 +2,7 @@ package sistema;
 
 import ambiente.*;
 import arvore.TreeNode;
+import com.sun.org.apache.xalan.internal.xsltc.trax.TrAXFilter;
 import problema.*;
 import comuns.*;
 import static comuns.PontosCardeais.*;
@@ -21,8 +22,8 @@ public class Agente implements PontosCardeais {
     
     //sequencia de acoes a ser executada pelo agente
     //int plan[] = {N,N,N,N,L,L,L,L,L,NE,NE,L};
-    int plan[];
-    int plan_length = 20; //tamanho do vetor de plano
+    int plan[] = {};
+    //int plan_length = 20; //tamanho do vetor de plano
     double custo = 0;
     static int ct = -1;
            
@@ -70,7 +71,7 @@ public class Agente implements PontosCardeais {
         //custo += prob.obterCustoAcao(estAtu, plan[ct], prob.suc(estAtu, plan[ct]));
         System.out.println();
         
-        if(ct == plan_length-1)
+        if(ct == plan.length-1)
             return -1;
         else
             return 1;
@@ -194,51 +195,66 @@ public class Agente implements PontosCardeais {
     public void busca_ah1()
     {
         plan = new int[20];
-        int fn[] = new int[8];
-        int acao[] = new int[8]; 
-        
-        int count_plano = 0, count_fronteira = 0, menor, menor_indice=0;
         double distancia_euclidiana, gn; //variaveis para calcular fn
         
-        Estado estado = estAtu; //inicializo o estado que irei utilizar para buscar
-        //Estado fronteira[] = new Estado[8]; //minha fronteira é um vetor de estados
+        //criando o nó pai da árvore
+        TreeNode raiz = new TreeNode(null);
+        raiz.setState(estAtu);
+        raiz.setAction(-1);
+        raiz.setDepth(0);
+        raiz.setGn(0);
+        raiz.setHn(0);
+        raiz.setGnHn(raiz.getGn(), raiz.getHn());
         
-        while (prob.testeObjetivo(estado))
+        //arvore de busca
+        List<TreeNode> arvore = new ArrayList<>();
+        List<TreeNode> fronteira = new ArrayList<>();
+        arvore.add(raiz);
+        TreeNode pai;
+        pai = raiz;
+        
+        while (!prob.testeObjetivo(pai.getState()))
         {
-            int acoesPossiveis[] = prob.acoesPossiveis(estado);
+            int acoesPossiveis[] = prob.acoesPossiveis(pai.getState());
             
             for(int i=0; i<8; i++)
             {
                 if(acoesPossiveis[i] == 0)
                 {
-                    //fronteira[count_fronteira] = prob.suc(estado, i); //coloco o estado na fronteira
-                    acao[count_fronteira] = i; //salvo a ação relacionada com o possível destino
+                    //para cada ação possível, 
+                    TreeNode node = new TreeNode(pai);
+                    node.setState(prob.suc(pai.getState(), i));
+                    node.setAction(i);
+                    node.setDepth(pai.getDepth() + 1);
                     
                     //calculo a distancia euclidiana, será o meu hn
                     distancia_euclidiana = Math.sqrt(
-                            Math.pow(prob.suc(estado, i).getLin() - prob.estObj.getLin(), 2)
-                            + Math.pow(prob.suc(estado, i).getCol() - prob.estObj.getCol(), 2)
+                            Math.pow(prob.suc(pai.getState(), i).getLin() - prob.estObj.getLin(), 2)
+                            + Math.pow(prob.suc(pai.getState(), i).getCol() - prob.estObj.getCol(), 2)
                     );
-                    gn = prob.obterCustoAcao(estado, i, prob.suc(estado, i)); //custo para chegar em n
-                    fn[count_fronteira] = (int)(gn + distancia_euclidiana); //salvo o fn relacionado com o possivel destino
-                    count_fronteira++; //incrementa o count   
+                    gn = prob.obterCustoAcao(pai.getState(), i, node.getState());
+                    
+                    node.setGn((float) gn);
+                    node.setHn((float) distancia_euclidiana);
+                    //node.setGnHn(node.getGn(), node.getHn());
+                    arvore.add(node);
+                    fronteira.add(node);
                 }          
             }
-            menor = Integer.MAX_VALUE; //inicializo o menor valor
-            for(int i=0; i<count_fronteira; i++) //para cada elemento na fronteira
-            {
-                if (fn[i] <= menor) //busco qual tem o menor fn
-                {
-                    menor = fn[i]; //salvo o valor fn que é menor
-                    menor_indice = i; //preciso salvar o indice para achar a ação depois
-                }
+            pai = fronteira.get(0);
+            for(TreeNode node : fronteira){
+                if(node.getFn() < pai.getFn())
+                    pai = node;
             }
-            estado = prob.suc(estado, acao[menor_indice]); //atualizo meu estado
-            plan[count_plano] = acao[count_fronteira]; //coloco a ação escolhida no plano
-            count_plano++; //incrementa count do plano
-            count_fronteira = 0; //zera count da fronteira
+            fronteira.remove(pai); //remove o nó escolhido para expandir
+            
         }
-        this.plan_length = count_plano;
+        //preenche custo total da busca e o plano de ação encontrado
+        custo = pai.getFn();
+        for(int i=pai.getDepth(); i>0; i--){
+            plan[i] = pai.getAction();
+            pai = pai.getParent();
+        }
     }
 }    
 
