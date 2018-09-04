@@ -37,7 +37,7 @@ public class Agente implements PontosCardeais {
         
         //crencas do agente a respeito do labirinto
         prob.criarLabirinto(9, 9);
-        colocarCrencasParedes();
+        //colocarCrencasParedes();
     }
     
     
@@ -237,8 +237,6 @@ public class Agente implements PontosCardeais {
                     TreeNode node = new TreeNode(pai);
                     //o estado dele é o estado sucessor da ação atual a partir do estado do pai
                     node.setState(prob.suc(pai.getState(), i));
-                    //TODO: imprimindo o prob.suc é possível perceber que tem algo estranho, ele retorna coisas negativas...
-                    System.out.println("Estado: " + prob.suc(pai.getState(), i).getString());
                     //a ação dele é a ação atual...
                     node.setAction(i);
                     //profundidade é a do pai + 1
@@ -306,7 +304,6 @@ public class Agente implements PontosCardeais {
         {
             //busco as ações possíveis para o estado do pai
             int acoesPossiveis[] = prob.acoesPossiveis(pai.getState());
-            
             //para cada ação possível
             for(int i=0; i<8; i++)
             {
@@ -317,8 +314,6 @@ public class Agente implements PontosCardeais {
                     TreeNode node = new TreeNode(pai);
                     //o estado dele é o estado sucessor da ação atual a partir do estado do pai
                     node.setState(prob.suc(pai.getState(), i));
-                    //TODO: imprimindo o prob.suc é possível perceber que tem algo estranho, ele retorna coisas negativas...
-                    System.out.println("Estado: " + prob.suc(pai.getState(), i));
                     //a ação dele é a ação atual...
                     node.setAction(i);
                     //profundidade é a do pai + 1

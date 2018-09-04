@@ -90,11 +90,9 @@ public class Problema implements PontosCardeais {
         // define incrementos para cada ação
         int incrLin[] = {-1,-1,0,1,1,1,0,-1};
         int incrCol[] = {0,1,1,1,0,-1,-1,-1};
-        
         lin += incrLin[acao];
         col += incrCol[acao];
         est.setLinCol(lin, col);
-        
         return est;
     }
 
@@ -109,13 +107,13 @@ public class Problema implements PontosCardeais {
      */
     public int[] acoesPossiveis(Estado est) {
         int acoes[] = new int[8];
-
+        System.out.println("Estado: " + est.getString());
         // testa se pode ir para o N, NE ou NO sem sair do limite do labirinto
         if (est.getLin() == 0) {
             acoes[0] = acoes[1] = acoes[7] = -1;
         }
         // testa se pode ir para o NE, L ou SE sem sair do limite do labirinto
-        if (est.getCol() == (crencaLabir.getMaxCol() - 1)) {
+        if (est.getCol() == (crencaLabir.getMaxCol() - 1)) {        
             acoes[1] = acoes[2] = acoes[3] = -1;
         }
         // testa se pode ir para o SE, S ou SO sem sair do limite do labirinto
