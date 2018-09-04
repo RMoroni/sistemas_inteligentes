@@ -22,7 +22,7 @@ public class Agente implements PontosCardeais {
     
     //sequencia de acoes a ser executada pelo agente
     //int plan[] = {N,N,N,N,L,L,L,L,L,NE,NE,L};
-    int plan[] = {};
+    int plan[] = new int[20];
     double custo = 0;
     static int ct = -1;
            
@@ -37,7 +37,7 @@ public class Agente implements PontosCardeais {
         
         //crencas do agente a respeito do labirinto
         prob.criarLabirinto(9, 9);
-        //colocarCrencasParedes();
+        colocarCrencasParedes();
     }
     
     
@@ -49,14 +49,14 @@ public class Agente implements PontosCardeais {
         
         //imprime o que foi pedido
         System.out.println("estado atual: " + estAtu.getString());
-        /*System.out.print("acoes possiveis: { ");
+        System.out.print("acoes possiveis: { ");
         int acoesPossiveis[] = prob.acoesPossiveis(estAtu);
         int i;
         for(i=0; i<8; i++){
             if(acoesPossiveis[i] == 0)
                 System.out.print(acao[i] + " ");           
         }
-        System.out.println("}");*/
+        System.out.println("}");
         System.out.println("ct = " + ct + " de " + (plan.length-1) + " acao escolhida = " + acao[plan[ct]]);
         
         //executa o plano de acoes: SOMENTE UMA ACAO POR CHAMADA DESTE METODO
@@ -208,12 +208,11 @@ public class Agente implements PontosCardeais {
         
         //criando o nó raiz da árvore
         TreeNode raiz = new TreeNode(null);
-        raiz.setState(estAtu); //inicia com estado do agente
+        raiz.setState(new Estado(8, 0)); //inicia com estado do agente
         raiz.setAction(-1);
         raiz.setDepth(0);
         raiz.setGn(0); //custo é 0
         raiz.setHn(0); //hn tbm
-        //raiz.setGnHn(raiz.getGn(), raiz.getHn());
         
         //arvore de busca
         List<TreeNode> arvore = new ArrayList<>();
@@ -239,7 +238,7 @@ public class Agente implements PontosCardeais {
                     //o estado dele é o estado sucessor da ação atual a partir do estado do pai
                     node.setState(prob.suc(pai.getState(), i));
                     //TODO: imprimindo o prob.suc é possível perceber que tem algo estranho, ele retorna coisas negativas...
-                    System.out.println("Estado: " + prob.suc(pai.getState(), i));
+                    System.out.println("Estado: " + prob.suc(pai.getState(), i).getString());
                     //a ação dele é a ação atual...
                     node.setAction(i);
                     //profundidade é a do pai + 1
@@ -267,7 +266,7 @@ public class Agente implements PontosCardeais {
             //para cada nó na fronteira
             for(TreeNode node : fronteira){
                 //quem tiver o menor fn será o escolhido
-                if(node.getFn() < pai.getFn())
+                if(node.getFn() <= pai.getFn())
                     pai = node;
             }
             fronteira.remove(pai); //remove o nó escolhido para expandir
