@@ -2,11 +2,11 @@ package sistema;
 
 import ambiente.*;
 import arvore.TreeNode;
-import com.sun.org.apache.xalan.internal.xsltc.trax.TrAXFilter;
 import problema.*;
 import comuns.*;
 import static comuns.PontosCardeais.*;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import javax.swing.JOptionPane;
 
@@ -37,9 +37,42 @@ public class Agente implements PontosCardeais {
         
         //crencas do agente a respeito do labirinto
         prob.criarLabirinto(9, 9);
-        //colocarCrencasParedes();
+        colocarCrencasParedes();
     }
     
+    /**
+     * Define as crencas do agente a respeito das paredes do labirinto
+     */
+    public void colocarCrencasParedes(){
+        //não sei pq, mas funcionou
+        /*prob.crencaLabir.porParedeVertical(0, 1, 0);
+        prob.crencaLabir.porParedeVertical(0, 0, 1);
+        prob.crencaLabir.porParedeVertical(5, 8, 1);
+        prob.crencaLabir.porParedeVertical(5, 5, 2);
+        prob.crencaLabir.porParedeVertical(8, 8, 2);
+        prob.crencaLabir.porParedeHorizontal(4, 7, 0);
+        prob.crencaLabir.porParedeHorizontal(7, 7, 1);
+        prob.crencaLabir.porParedeHorizontal(3, 5, 2);
+        prob.crencaLabir.porParedeHorizontal(3, 5, 3);
+        prob.crencaLabir.porParedeHorizontal(7, 7, 3);
+        prob.crencaLabir.porParedeVertical(6, 7, 4);
+        prob.crencaLabir.porParedeVertical(5, 6, 5);
+        prob.crencaLabir.porParedeVertical(5, 7, 7);*/
+        prob.crencaLabir.porParedeHorizontal(0, 1, 0);
+        prob.crencaLabir.porParedeHorizontal(4, 7, 0);
+        prob.crencaLabir.parede[1][0] = 1;
+        prob.crencaLabir.parede[1][7] = 1;
+        prob.crencaLabir.porParedeHorizontal(3, 5, 2);
+        prob.crencaLabir.porParedeHorizontal(3, 5, 3);
+        prob.crencaLabir.parede[3][7] = 1;
+        prob.crencaLabir.porParedeVertical(5, 8, 1);
+        prob.crencaLabir.parede[5][2] = 1;
+        prob.crencaLabir.parede[8][2] = 1;
+        prob.crencaLabir.parede[5][5] = 1;
+        prob.crencaLabir.porParedeHorizontal(4, 5, 6);
+        prob.crencaLabir.parede[7][4] = 1;
+        prob.crencaLabir.porParedeVertical(5, 7, 7);
+    }
     
     /**Escolhe qual ação (UMA E SOMENTE UMA) será executada em um ciclo de raciocínio
      * @return 1 enquanto o plano não acabar; -1 quando acabar
@@ -65,9 +98,9 @@ public class Agente implements PontosCardeais {
         executarIr(plan[ct]);
         
         //imprime o que foi pedido                          
-        //System.out.println("custo ate o momento: " + custo);
+        System.out.println("custo ate o momento: " + custo);
         //calcula custo acumulado após executar a ação
-        //custo += prob.obterCustoAcao(estAtu, plan[ct], prob.suc(estAtu, plan[ct]));
+        custo += prob.obterCustoAcao(estAtu, plan[ct], prob.suc(estAtu, plan[ct]));
         System.out.println();
         
         if(ct == plan.length-1)
@@ -93,24 +126,6 @@ public class Agente implements PontosCardeais {
         return new Estado(pos[0], pos[1]);
     }
     
-     /**
-     * Define as crencas do agente a respeito das paredes do labirinto
-     */
-    public void colocarCrencasParedes(){
-        prob.crencaLabir.porParedeVertical(0, 1, 0);
-        prob.crencaLabir.porParedeVertical(0, 0, 1);
-        prob.crencaLabir.porParedeVertical(5, 8, 1);
-        prob.crencaLabir.porParedeVertical(5, 5, 2);
-        prob.crencaLabir.porParedeVertical(8, 8, 2);
-        prob.crencaLabir.porParedeHorizontal(4, 7, 0);
-        prob.crencaLabir.porParedeHorizontal(7, 7, 1);
-        prob.crencaLabir.porParedeHorizontal(3, 5, 2);
-        prob.crencaLabir.porParedeHorizontal(3, 5, 3);
-        prob.crencaLabir.porParedeHorizontal(7, 7, 3);
-        prob.crencaLabir.porParedeVertical(6, 7, 4);
-        prob.crencaLabir.porParedeVertical(5, 6, 5);
-        prob.crencaLabir.porParedeVertical(5, 7, 7);
-    }
     
     /**
      * Define qual busca será executada de acordo com a escolha do usuário
@@ -210,14 +225,13 @@ public class Agente implements PontosCardeais {
         TreeNode raiz = new TreeNode(null);
         raiz.setState(new Estado(8, 0)); //inicia com estado do agente
         raiz.setAction(-1);
-        raiz.setDepth(0);
         raiz.setGn(0); //custo é 0
         raiz.setHn(0); //hn tbm
         
         //arvore de busca
-        List<TreeNode> arvore = new ArrayList<>();
+        List<Estado> estados = new ArrayList<>();
         List<TreeNode> fronteira = new ArrayList<>();
-        arvore.add(raiz); //adiciona a raiz na árvore
+        estados.add(raiz.getState()); //adiciona estado da raiz como estado já visitado
         TreeNode pai; //pai será um 'nó auxiliar'
         pai = raiz; //ele começão sendo a raiz da árvore
         
@@ -228,35 +242,44 @@ public class Agente implements PontosCardeais {
             int acoesPossiveis[] = prob.acoesPossiveis(pai.getState());
             
             //para cada ação possível
-            for(int i=0; i<8; i++)
-            {
+            for(int i=0; i<8; i++){
                 //se for válida
                 if(acoesPossiveis[i] == 0)
                 {
                     //crio um nó como filho...
-                    TreeNode node = new TreeNode(pai);
+                    TreeNode node = pai.addChild();
                     //o estado dele é o estado sucessor da ação atual a partir do estado do pai
                     node.setState(prob.suc(pai.getState(), i));
+                    //se o estado já existe na lista de estados, pula para prox interação
+                    
+                    //tem essas duas maneiras de verificar, as duas deram ruim kkkk
+                    //if (!estados.contains(node.getState())){
+                    boolean continua = false;
+                    for (Estado estado : estados) {
+                        if (node.getState().igualAo(estado))
+                            continua = true;
+                    }
+                    if (!continua){
                     //a ação dele é a ação atual...
                     node.setAction(i);
-                    //profundidade é a do pai + 1
-                    node.setDepth(pai.getDepth() + 1);
-                    
+                    System.out.println("est: " + node.getState().getString());
                     //calculo a distancia euclidiana até o objetivo, será o meu hn
                     distancia_euclidiana = Math.sqrt(
-                            Math.pow(prob.suc(pai.getState(), i).getLin() - prob.estObj.getLin(), 2)
-                            + Math.pow(prob.suc(pai.getState(), i).getCol() - prob.estObj.getCol(), 2)
+                            Math.pow(node.getState().getLin() - prob.estObj.getLin(), 2)
+                            + Math.pow(node.getState().getCol() - prob.estObj.getCol(), 2)
                     );
                     //meu gn é o custo do pai + o custo para chegar no próximo estado
                     gn = pai.getFn() + prob.obterCustoAcao(pai.getState(), i, node.getState());
+                    
                     //seta gn e hn
                     node.setGn((float) gn);
                     node.setHn((float) distancia_euclidiana);
-                    //node.setGnHn(node.getGn(), node.getHn());
+
                     //adiciona o nó na árvore
-                    arvore.add(node);
+                    estados.add(node.getState());
                     //adiciona o nó na fronteira
                     fronteira.add(node);
+                    }
                 }          
             }
             //vou buscar o próximo 'pai', inicializo com o primeiro nó na fronteira
@@ -281,6 +304,7 @@ public class Agente implements PontosCardeais {
     }
     public void busca_ah2()
     {
+        //TODO: atualizar de acordo com o que funcionar haha
         double distancia_manhattan, gn; //variaveis para calcular fn
         
         //criando o nó raiz da árvore

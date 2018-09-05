@@ -22,16 +22,16 @@ public class Agente implements PontosCardeais {
            
     public Agente(Model m) {
         this.model = m;
-        prob = new Problema();
-        
-        //crencas do agente a respeito do labirinto
-        prob.criarLabirinto(9, 9);
-        colocarCrencasParedes();
+        prob = new Problema();    
         
         //crencas do agente: Estado inicial, objetivo e atual
         estAtu = new Estado(8,0);
         prob.defEstIni(8, 0);
         prob.defEstObj(2, 8);
+        
+        //crencas do agente a respeito do labirinto
+        prob.criarLabirinto(9, 9);
+        colocarCrencasParedes();
     }
     
     /**

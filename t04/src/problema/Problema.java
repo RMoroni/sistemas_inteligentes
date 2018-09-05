@@ -35,13 +35,13 @@ public class Problema implements PontosCardeais {
         this.maxLin = maxLin;
         this.maxCol = maxCol;
         this.custo = new float [maxLin*maxCol][8];
-        colocarCrencasParedes();
+        //colocarCrencasParedes();
     }
 
     /**
      * Define as crencas do agente a respeito das paredes do labirinto
      */
-    public void colocarCrencasParedes(){
+    /*public void colocarCrencasParedes(){
         crencaLabir.porParedeHorizontal(0, 1, 0);
         crencaLabir.porParedeHorizontal(4, 7, 0);
         crencaLabir.parede[1][0] = 1;
@@ -56,7 +56,7 @@ public class Problema implements PontosCardeais {
         crencaLabir.porParedeHorizontal(4, 5, 6);
         crencaLabir.parede[7][4] = 1;
         crencaLabir.porParedeVertical(5, 7, 7);
-    }
+    }*/
     
     /**
      * Define estado inicial
@@ -107,7 +107,6 @@ public class Problema implements PontosCardeais {
      */
     public int[] acoesPossiveis(Estado est) {
         int acoes[] = new int[8];
-        System.out.println("Estado: " + est.getString());
         // testa se pode ir para o N, NE ou NO sem sair do limite do labirinto
         if (est.getLin() == 0) {
             acoes[0] = acoes[1] = acoes[7] = -1;

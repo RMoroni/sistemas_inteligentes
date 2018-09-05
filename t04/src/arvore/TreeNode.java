@@ -35,9 +35,9 @@ public class TreeNode {
         this.st = est;
     }
 
-    public void setDepth(int depth) {
+    /*public void setDepth(int depth) {
         this.depth = depth;
-    }
+    }*/
     
     public List<TreeNode> getChildren() {
         return children;
