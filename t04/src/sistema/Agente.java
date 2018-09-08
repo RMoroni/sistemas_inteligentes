@@ -253,13 +253,13 @@ public class Agente implements PontosCardeais {
                     //se o estado já existe na lista de estados, pula para prox interação
                     
                     //tem essas duas maneiras de verificar, as duas deram ruim kkkk
-                    //if (!estados.contains(node.getState())){
-                    boolean continua = false;
+                    if (!estados.contains(node.getState())){
+                    /*boolean continua = false;
                     for (Estado estado : estados) {
                         if (node.getState().igualAo(estado))
                             continua = true;
                     }
-                    if (!continua){
+                    if (!continua){*/
                     //a ação dele é a ação atual...
                     node.setAction(i);
                     System.out.println("est: " + node.getState().getString());
@@ -304,22 +304,19 @@ public class Agente implements PontosCardeais {
     }
     public void busca_ah2()
     {
-        //TODO: atualizar de acordo com o que funcionar haha
         double distancia_manhattan, gn; //variaveis para calcular fn
         
         //criando o nó raiz da árvore
         TreeNode raiz = new TreeNode(null);
-        raiz.setState(estAtu); //inicia com estado do agente
+        raiz.setState(new Estado(8, 0)); //inicia com estado do agente
         raiz.setAction(-1);
-        raiz.setDepth(0);
         raiz.setGn(0); //custo é 0
         raiz.setHn(0); //hn tbm
-        //raiz.setGnHn(raiz.getGn(), raiz.getHn());
         
         //arvore de busca
-        List<TreeNode> arvore = new ArrayList<>();
+        List<Estado> estados = new ArrayList<>();
         List<TreeNode> fronteira = new ArrayList<>();
-        arvore.add(raiz); //adiciona a raiz na árvore
+        estados.add(raiz.getState()); //adiciona estado da raiz como estado já visitado
         TreeNode pai; //pai será um 'nó auxiliar'
         pai = raiz; //ele começão sendo a raiz da árvore
         
@@ -328,35 +325,44 @@ public class Agente implements PontosCardeais {
         {
             //busco as ações possíveis para o estado do pai
             int acoesPossiveis[] = prob.acoesPossiveis(pai.getState());
+            
             //para cada ação possível
-            for(int i=0; i<8; i++)
-            {
+            for(int i=0; i<8; i++){
                 //se for válida
                 if(acoesPossiveis[i] == 0)
                 {
                     //crio um nó como filho...
-                    TreeNode node = new TreeNode(pai);
+                    TreeNode node = pai.addChild();
                     //o estado dele é o estado sucessor da ação atual a partir do estado do pai
                     node.setState(prob.suc(pai.getState(), i));
+                    //se o estado já existe na lista de estados, pula para prox interação
+                    
+                    //tem essas duas maneiras de verificar, as duas deram ruim kkkk
+                    //if (!estados.contains(node.getState())){
+                    boolean continua = false;
+                    for (Estado estado : estados) {
+                        if (node.getState().igualAo(estado))
+                            continua = true;
+                    }
+                    if (!continua){
                     //a ação dele é a ação atual...
                     node.setAction(i);
-                    //profundidade é a do pai + 1
-                    node.setDepth(pai.getDepth() + 1);
-                    
+                    System.out.println("est: " + node.getState().getString());
                     //calculo a distancia euclidiana até o objetivo, será o meu hn
                     distancia_manhattan = Math.abs(prob.suc(pai.getState(), i).getLin() - prob.estObj.getLin())
                             + Math.abs(prob.suc(pai.getState(), i).getCol() - prob.estObj.getCol());
-                    
                     //meu gn é o custo do pai + o custo para chegar no próximo estado
                     gn = pai.getFn() + prob.obterCustoAcao(pai.getState(), i, node.getState());
+                    
                     //seta gn e hn
                     node.setGn((float) gn);
-                    node.setHn((float) distancia_manhattan/2); //dividi por 2 para respeitar hn <= hn*
-                    //node.setGnHn(node.getGn(), node.getHn());
+                    node.setHn((float) distancia_manhattan);
+
                     //adiciona o nó na árvore
-                    arvore.add(node);
+                    estados.add(node.getState());
                     //adiciona o nó na fronteira
                     fronteira.add(node);
+                    }
                 }          
             }
             //vou buscar o próximo 'pai', inicializo com o primeiro nó na fronteira
@@ -364,7 +370,7 @@ public class Agente implements PontosCardeais {
             //para cada nó na fronteira
             for(TreeNode node : fronteira){
                 //quem tiver o menor fn será o escolhido
-                if(node.getFn() < pai.getFn())
+                if(node.getFn() <= pai.getFn())
                     pai = node;
             }
             fronteira.remove(pai); //remove o nó escolhido para expandir
