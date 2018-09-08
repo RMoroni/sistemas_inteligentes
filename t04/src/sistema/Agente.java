@@ -6,6 +6,8 @@ import problema.*;
 import comuns.*;
 import static comuns.PontosCardeais.*;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 import javax.swing.JOptionPane;
@@ -153,67 +155,76 @@ public class Agente implements PontosCardeais {
         TreeNode raiz = new TreeNode(null); //raiz não tem pai
         raiz.setState(new Estado(8,0)); //estado dela é a posição do agente
         raiz.setAction(-1);
-        raiz.setDepth(0); //profundidade 0
         raiz.setGn(0); //custo 0
         raiz.setHn(0);
-        raiz.setGnHn(raiz.getGn(), raiz.getHn());
+        //raiz.setGnHn(raiz.getGn(), raiz.getHn());
         
-        //cria a árvore de busca de acordo com as expansões dos nós
-        List<TreeNode> arvore = new ArrayList<>(); //onde serão colocados os nós
-        arvore.add(raiz); //a raiz é o primeiro nó
-        TreeNode pai = new TreeNode(null); //pai vai ser um 'auxiliar'
-        pai = raiz; //inicializa ele com a raiz
         //armazena a fronteira de cada iteração
         List<TreeNode> fronteira = new ArrayList<>();
+        fronteira.add(raiz);
+        //armazena os estados já explorados
+        List<Estado> estadosExplorados = new ArrayList();
         
-        while(true){
+        while(!prob.testeObjetivo(fronteira.get(0).getState())){
             
-            //expansão do nó retirado da fronteira
-            //adiciona na fronteira todos os seus nós filhos
-            JOptionPane.showMessageDialog(null, pai.getState().getString());
-            //descubro quais ações possíveis para o estado do pai
-            int acoesPossiveis[] = prob.acoesPossiveis(pai.getState());
+            //verifica quais ações possíveis para o nó que será expandido
+            //ou seja, quais são seus filhos
+            int acoesPossiveis[] = prob.acoesPossiveis(fronteira.get(0).getState());
             int i;
             //para cada ação possível
             for(i=0; i<8; i++){
                 if(acoesPossiveis[i] == 0){
-                    TreeNode no = new TreeNode(pai); //cria um nó filho
-                    no.setState(new Estado(pai.getState().getLin(), pai.getState().getCol()));
-                    no.setState(prob.suc(no.getState(), i)); //o estado dele é o sucessor
-                    //verifica se não é repetido
-                    if(no.getState().getLin() != pai.getState().getLin() || no.getState().getCol() != pai.getState().getCol()){
-                        no.setAction(i); //seta a ação escolhida
-                        no.setDepth(pai.getDepth() + 1); //profundidade é a mesma do pai + 1
-                        //custo do pai + custo para realizar a ação
-                        no.setGn(pai.getFn() + prob.obterCustoAcao(pai.getState(), i, no.getState()));
-                        no.setHn(0); //não existe hn no custo-uniforme
-                        no.setGnHn(no.getGn(), no.getHn());
-                        arvore.add(no); //adiciona na árvore de busca
-                        fronteira.add(no); //adiciona na fronteira
+                    //cria um nó filho
+                    TreeNode node = fronteira.get(0).addChild();
+                    //como o método suc altera o estado do nós que é passado, foi instanciado
+                    //um novo estado para conseguir obter o estador sucessor
+                    Estado estadoTemp = new Estado(fronteira.get(0).getState().getLin(), fronteira.get(0).getState().getCol());
+                    node.setState(prob.suc(estadoTemp, i));
+                    node.setAction(i);
+                    node.setGn(fronteira.get(0).getGn() + prob.obterCustoAcao(fronteira.get(0).getState(), i, node.getState()));
+                    node.setHn(0);
+                    
+                    //verifica se o estado deste nó filho já foi explorado
+                    boolean continua = false;
+                    for (Estado estado : estadosExplorados) {
+                        if (node.getState().igualAo(estado)){
+                            continua = true;
+                            break;
+                        }
                     }
+                    //se o estado deste nó filho ainda não foi explorado,
+                    //o nó é adicionado na fronteira
+                    if (!continua)
+                        fronteira.add(node);
+                    
                 }                         
             }
             
-            //faz a escolha do próximo nó
-            //que é aquele que apresenta menor custo acumulado
-            pai = fronteira.get(0);
-            //para cada nó na fronteira
-            for(TreeNode no : fronteira){
-                if(no.getFn() < pai.getFn())
-                    pai = no;
-            }
-            fronteira.remove(pai); //remove o nó escolhido para expandir
-            if(prob.testeObjetivo(pai.getState())) //teste se o nó escolhido é o estado objetivo
-                break;
+            //adiciona aos estados explorados o estado do nó que acabou de ser expandido
+            estadosExplorados.add(new Estado(fronteira.get(0).getState().getLin(), fronteira.get(0).getState().getCol()));
+            //remove da fronteira o nó que foi expandido
+            fronteira.remove(0);
+            
+            //ordena a fronteira
+            Collections.sort (fronteira, new Comparator() {
+                public int compare(Object o1, Object o2) {
+                    TreeNode no1 = (TreeNode) o1;
+                    TreeNode no2 = (TreeNode) o2;
+                    return no1.getGn() < no2.getGn() ? -1 : (no1.getGn() > no2.getGn() ? +1 : 0);
+                }
+            });
         
         }
         
         //preenche custo total da busca e o plano de ação encontrado
-        custo = pai.getFn();
+        TreeNode node = fronteira.get(0); 
+        custo = node.getGn();
         int i;
-        for(i=pai.getDepth(); i>0; i--){
-            plan[i] = pai.getAction();
-            pai = pai.getParent();
+        //for(i=0; i<node.getDepth(); i++)
+            //plan[i] = -1;
+        for(i=node.getDepth() - 1; i>=0; i--){
+            plan[i] = node.getAction();
+            node = node.getParent();
         }
         
     }
