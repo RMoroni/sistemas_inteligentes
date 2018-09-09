@@ -46,13 +46,12 @@ public class Main {
         Object[] opcoes = { "Custo-uniforme", "A* com h1", "A* com h2"};
         String resposta;
         resposta = (String) JOptionPane. showInputDialog(null, "Qual busca deve ser executada ?", 
-                "Plano de ação do agente", JOptionPane.QUESTION_MESSAGE, null, opcoes, null);
-        ag.executaBusca(resposta);
+                "Plano de ação do agente", JOptionPane.QUESTION_MESSAGE, null, opcoes, null);        
                     
         // agente escolhe proxima açao e a executa no ambiente (modificando
         // o estado do labirinto porque ocupa passa a ocupar nova posicao)
         System.out.println("\n*** Inicio do ciclo de raciocinio do agente ***\n");
-        while (ag.deliberar() != -1) {  
+        while (ag.deliberar(resposta) != -1) {  
             model.desenhar(); 
         }
         
