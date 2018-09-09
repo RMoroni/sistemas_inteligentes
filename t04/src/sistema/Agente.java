@@ -184,12 +184,8 @@ public class Agente implements PontosCardeais {
                     
                     //verifica se o estado deste nó filho já foi explorado
                     boolean continua = false;
-                    for(Estado estado : estadosExplorados){
-                        if(node.getState().igualAo(estado)){
-                            continua = true;
-                            break;
-                        }
-                    }
+                    if (estadosExplorados.contains(node.getState()))
+                        continua = true;
                     
                     //verifica se o estado deste nó filho já está na fronteira
                     //se estiver, verifica qual dos dois tem g(n) menor
@@ -211,9 +207,7 @@ public class Agente implements PontosCardeais {
                     //não existe outro nó na fronteira de mesmo estado
                     //ele é adicionado na fronteira
                     if(!continua)
-                        fronteira.add(node);
-                        
-                    
+                        fronteira.add(node);                                            
                 }                         
             }
             
@@ -248,6 +242,8 @@ public class Agente implements PontosCardeais {
      * Cria o plano de ação do agente através da busca A*
      * utilizando uma heurística baseada na distância euclidiana
      * @param h heurística 1 ou 2
+     * 1: distância euclidiana
+     * 2: manhattan
      */
     public void busca_ah(int h){
         
@@ -262,7 +258,7 @@ public class Agente implements PontosCardeais {
         
         //armazena a fronteira de cada iteração
         List<TreeNode> fronteira = new ArrayList<>();
-        fronteira.add(raiz);
+        fronteira.add(raiz); //primeiro nó na fronteira é a raiz
         //armazena os estados já explorados
         List<Estado> estadosExplorados = new ArrayList();
         
@@ -280,18 +276,15 @@ public class Agente implements PontosCardeais {
                     //como o método suc altera o estado do nó que é passado, foi instanciado
                     //um novo estado para conseguir obter o estado sucessor
                     Estado estadoTemp = new Estado(fronteira.get(0).getState().getLin(), fronteira.get(0).getState().getCol());
-                    node.setState(prob.suc(estadoTemp, i));
-                    node.setAction(i);
+                    node.setState(prob.suc(estadoTemp, i)); //estado sucessor é setado para o nó
+                    node.setAction(i); //ação escolhida é setada para o nó
+                    //gn é o custo da ação, hn é a heuristica escolhida
                     node.setGnHn(fronteira.get(0).getGn() + prob.obterCustoAcao(fronteira.get(0).getState(), i, node.getState()), calculaHeuristica(h, node));
                     
                     //verifica se o estado deste nó filho já foi explorado
                     boolean continua = false;
-                    for(Estado estado : estadosExplorados){
-                        if(node.getState().igualAo(estado)){
-                            continua = true;
-                            break;
-                        }
-                    }
+                    if (estadosExplorados.contains(node.getState()))
+                        continua = true;
                     
                     //verifica se o estado deste nó filho já está na fronteira
                     //se estiver, verifica qual dos dois tem f(n) menor
@@ -306,16 +299,13 @@ public class Agente implements PontosCardeais {
                                 continua = true;
                                 break;
                             }
-                        }
+                        }   
                     }
-                    
                     //caso o nó filho ainda ñ tenha sido explorado e
                     //não existe outro nó na fronteira de mesmo estado
                     //ele é adicionado na fronteira
-                    if(!continua)
-                        fronteira.add(node);
-                        
-                    
+                    if (!continua)
+                        fronteira.add(node); 
                 }                         
             }
             
@@ -352,7 +342,9 @@ public class Agente implements PontosCardeais {
      * @return valor de h(n)
      */
     public float calculaHeuristica(int h, TreeNode no){
-        float hn = 0;
+        float hn;
+        //1: distância euclidiana (hipotenusa), raiz do quadrado das diferenças
+        //2: distância manhattan/2, distância ignorando as diagonais (em L)
         if(h == 1){
             hn = (float) Math.sqrt(
                   Math.pow(no.getState().getLin() - prob.estObj.getLin(), 2)
@@ -360,6 +352,7 @@ public class Agente implements PontosCardeais {
         }else{
             hn = Math.abs(no.getState().getLin() - prob.estObj.getLin())
                  + Math.abs(no.getState().getCol() - prob.estObj.getCol());
+            hn /= 2; //divide por 2 para ficar menor do que a distância real
         }
         return hn;
     }
