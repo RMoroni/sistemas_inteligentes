@@ -29,7 +29,7 @@ public class AGMochila {
      * tamanho da população = quantidade de indivíduos ou cromossomos
      * OBRIGATORIAMENTE UM NÚMERO PAR >= 2
      */
-    private static final int TAM_POP = 8;
+    private static final int TAM_POP = 32;
     /**
      * critério de parada: máximo de gerações a serem criadas
      */
@@ -62,7 +62,7 @@ public class AGMochila {
      * penalização: escolhe se é fitness com penalização (caso true). Caso
      * false, escolhe fitness+reparação
      */
-    private static final boolean penalizacao = false;
+    private static final boolean penalizacao = true;
 
     /**
      * Cria uma população inicial contendo TAM_POP mochilas preenchidas com
@@ -198,6 +198,18 @@ public class AGMochila {
             //System.out.printf("ger. %03d: melhor fit = %02d\n", geracao, melhorFit);
             System.out.println(geracao + "," + melhorFit);
         } while (geracao < MAX_GERACOES);
+        /*System.out.println("\nMochilas com valor máximo: ");
+        for (Mochila mochila : m){
+            if (mochila.valor == melhorMochila.valor)
+            {
+                System.out.printf("---------------------\n");
+                System.out.printf("Mochila com %3d ITENS\n", mochila.qtdItens);
+                System.out.printf("Mochila com %3d KG\n", mochila.peso);
+                System.out.printf("Mochila com %3d VALOR\n", mochila.valor);
+                System.out.printf("---------------------\n");
+            }
+        }
+        System.out.println();*/
         return melhorMochila;
     }
 

@@ -1,6 +1,6 @@
 package agmochila;
 
-import static java.lang.Math.ceil;
+//import static java.lang.Math.ceil;
 import java.util.BitSet;
 import java.util.Random;
 
@@ -37,9 +37,9 @@ public class Mochila {
     BitSet colocado = new BitSet(QTD_ITENS_DISPON);
     
     // TIPOS DE EXECUÇÃO: PENALIZAÇÃO DO FITNESS OU REPARAÇÃO
-    public static final int PENALIZACAO = 0;
-    public static final int REPARACAO = 1;
-    
+    public static final int PENALIZACAO = 1;
+    public static final int REPARACAO = 0;
+    public static final int COEFICIENTE = 2;
     /**
      * Cria uma mochila vazia.
      */
@@ -137,7 +137,7 @@ public class Mochila {
     private void calcularFitnessPenalizacao() {
         // Penalizar indivíduos que violam a capacidade da MOCHILA
         if(peso > CAPACIDADE_KG_MOCHILA)
-            valor = (int) ceil(valor / (peso - CAPACIDADE_KG_MOCHILA));
+            valor = valor/((peso-CAPACIDADE_KG_MOCHILA) * COEFICIENTE);
     }
     
     /**
