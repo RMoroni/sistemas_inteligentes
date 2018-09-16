@@ -144,8 +144,12 @@ public class Mochila {
      * Este método repara a mochila fazendo-a respeitar a capacidade máxima de peso.
      */
     private void calcularFitnessReparacao() {
-        //@to do
-
+        //enquanto o peso da mochila foi maior que sua capacidade executa
+        while(peso > CAPACIDADE_KG_MOCHILA){
+            //sorteia um item para ser retirado da mochila
+            //executa até sortear um item que exista na mochila e possa ser retirado
+            while(!retirarItem(s.nextInt(QTD_ITENS_DISPON))){}
+        }
     }
 
     /**
