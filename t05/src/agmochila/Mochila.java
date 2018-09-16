@@ -1,5 +1,6 @@
 package agmochila;
 
+import static java.lang.Math.ceil;
 import java.util.BitSet;
 import java.util.Random;
 
@@ -134,10 +135,11 @@ public class Mochila {
      * ultrapassar a capacidade máxima de peso permitida.
      */
     private void calcularFitnessPenalizacao() {
-          // Penalizar indivíduos que violam a capacidade da MOCHILA
-        // @to do 
-
+        // Penalizar indivíduos que violam a capacidade da MOCHILA
+        if(peso > CAPACIDADE_KG_MOCHILA)
+            valor = (int) ceil(valor / (peso - CAPACIDADE_KG_MOCHILA));
     }
+    
     /**
      * Este método repara a mochila fazendo-a respeitar a capacidade máxima de peso.
      */
