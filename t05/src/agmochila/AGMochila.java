@@ -15,28 +15,33 @@ import static agmochila.AGCOperador.selecionarPorRoleta;
  */
 public class AGMochila {
 
-    // PARÂMETROS DE CONFIGURAÇÃO DO AG 
+    // PARÂMETROS DE CONFIGURAÇÃO DO AG
+    
     /**
      * número máximo de execuções
      */
-    //private static final int MAX_EXECUCOES = @todo;
+    private static final int MAX_EXECUCOES = 2;
+    /**
+     * armazena o fitness do melhor indivíduo encontrado em cada execução
+     */
+    private static final int[] melhorFitnessPorExecucao = new int[MAX_EXECUCOES];
     /**
      * tamanho da população = quantidade de indivíduos ou cromossomos
      * OBRIGATORIAMENTE UM NÚMERO PAR >= 2
      */
-    //private static final int TAM_POP = @todo;
+    private static final int TAM_POP = 8;
     /**
      * critério de parada: máximo de gerações a serem criadas
      */
-    //private static final int MAX_GERACOES = @todo;
+    private static final int MAX_GERACOES = 200;
     /**
      * probabilidade de crossover entre 2 individuos [0, 1]
      */
-    //private static final float PROB_CROSSOVER = (float) @todo;
+    private static final float PROB_CROSSOVER = (float) 0.75;
     /**
      * probabilidade de mutação de um alelo: [0 ,1]
      */
-    // private static final float PROB_MUTACAO = (float) @todo;
+    private static final float PROB_MUTACAO = (float) 0.04;
 
     // ESTRUTURAS PARA EXECUÇÃO DO AG
     /**
@@ -205,9 +210,19 @@ public class AGMochila {
             if (best != null) {
                 System.out.println(best.imprimirMochilaCSV());
                 best.imprimirMochila();
+                //armazena o fitness do melhor indivíduo desta execução
+                melhorFitnessPorExecucao[ct] = best.getValor();
             }
             ct++;
             System.out.println("Total de execucoes = " + ct);
         } while (ct < MAX_EXECUCOES);
+        //ao final de todas as execuções imprime o fitness
+        //do melhor indivíduo encontrado em cada execução
+        int i;
+        System.out.println();
+        System.out.println("Melhor fitness em cada execução:");
+        for(i=0; i<MAX_EXECUCOES; i++){
+            System.out.println(i + ", " + melhorFitnessPorExecucao[i]);
+        }
     }
 }

@@ -210,4 +210,11 @@ public class Mochila {
         }
         return false;
     }
+    
+        /**
+     * método utilizado para que possa obter o fitness da melhor mochila em cada execução.
+     */
+    public int getValor() {
+        return this.valor;
+    }
 }
