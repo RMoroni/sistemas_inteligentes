@@ -100,14 +100,12 @@ public class Agente implements PontosCardeais {
     public void colocarCrencasParedes(){
         prob.crencaLabir.porParedeVertical(0, 1, 0);
         prob.crencaLabir.porParedeVertical(0, 0, 1);
-        prob.crencaLabir.porParedeVertical(5, 8, 1);
+        prob.crencaLabir.porParedeVertical(6, 8, 1);
         prob.crencaLabir.porParedeVertical(5, 5, 2);
         prob.crencaLabir.porParedeVertical(8, 8, 2);
         prob.crencaLabir.porParedeHorizontal(4, 7, 0);
-        prob.crencaLabir.porParedeHorizontal(7, 7, 1);
         prob.crencaLabir.porParedeHorizontal(3, 5, 2);
-        prob.crencaLabir.porParedeHorizontal(3, 5, 3);
-        prob.crencaLabir.porParedeHorizontal(7, 7, 3);
+        prob.crencaLabir.porParedeHorizontal(3, 6, 3);
         prob.crencaLabir.porParedeVertical(6, 7, 4);
         prob.crencaLabir.porParedeVertical(5, 6, 5);
         prob.crencaLabir.porParedeVertical(5, 7, 7);
@@ -240,7 +238,7 @@ public class Agente implements PontosCardeais {
     
     /**
      * Cria o plano de ação do agente através da busca A*
-     * utilizando uma heurística baseada na distância euclidiana
+     * utilizando uma heurística
      * @param h heurística 1 ou 2
      * 1: distância euclidiana
      * 2: manhattan

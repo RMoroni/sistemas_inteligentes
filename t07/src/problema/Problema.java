@@ -6,6 +6,14 @@
 package problema;
 
 import comuns.*;
+import static comuns.PontosCardeais.L;
+import static comuns.PontosCardeais.N;
+import static comuns.PontosCardeais.NE;
+import static comuns.PontosCardeais.NO;
+import static comuns.PontosCardeais.O;
+import static comuns.PontosCardeais.S;
+import static comuns.PontosCardeais.SE;
+import static comuns.PontosCardeais.SO;
 
 /**
  *

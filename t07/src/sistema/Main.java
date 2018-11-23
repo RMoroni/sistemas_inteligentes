@@ -12,26 +12,24 @@ import javax.swing.JOptionPane;
  *
  * @author tacla
  */
-/*public class Main {
+public class Main {
     public static void main(String args[]) {
         // Cria o ambiente (modelo) = labirinto com suas paredes
         Model model = new Model(9, 9);
         model.labir.porParedeVertical(0, 1, 0);
         model.labir.porParedeVertical(0, 0, 1);
-        model.labir.porParedeVertical(5, 8, 1);
+        model.labir.porParedeVertical(6, 8, 1);
         model.labir.porParedeVertical(5, 5, 2);
         model.labir.porParedeVertical(8, 8, 2);
         model.labir.porParedeHorizontal(4, 7, 0);
-        model.labir.porParedeHorizontal(7, 7, 1);
         model.labir.porParedeHorizontal(3, 5, 2);
-        model.labir.porParedeHorizontal(3, 5, 3);
-        model.labir.porParedeHorizontal(7, 7, 3);
+        model.labir.porParedeHorizontal(3, 6, 3);
         model.labir.porParedeVertical(6, 7, 4);
         model.labir.porParedeVertical(5, 6, 5);
         model.labir.porParedeVertical(5, 7, 7);
         
         // seta a posição inicial do agente no ambiente - nao interfere no 
-        // raciocinio do agente, somente no amibente simulado
+        // raciocinio do agente, somente no ambiente simulado
         model.setPos(8, 0);
         model.setObj(2, 8);
         
@@ -63,9 +61,9 @@ import javax.swing.JOptionPane;
         }else
             System.out.println("Objetivo não alcançado!");
     }
-}*/
+}
 
-import net.sourceforge.jFuzzyLogic.FIS;
+/*import net.sourceforge.jFuzzyLogic.FIS;
 import net.sourceforge.jFuzzyLogic.plot.JFuzzyChart;
 
 import net.sourceforge.jFuzzyLogic.rule.Variable;
@@ -76,7 +74,7 @@ import net.sourceforge.jFuzzyLogic.rule.Variable;
  *
  * @author tacla
  */
-public class Main {
+/*public class Main {
     public static void main(String[] args) throws Exception {
         // Load from 'FCL' file
         String fileName = "./tipper.fcl";
@@ -111,4 +109,4 @@ public class Main {
         System.out.println("average="+tip.getMembership("average"));
         System.out.println("generous="+tip.getMembership("generous"));
     }
-}
+}*/

@@ -1,6 +1,14 @@
 package ambiente;
 import comuns.PontosCardeais;
 import comuns.Labirinto;
+import static comuns.PontosCardeais.L;
+import static comuns.PontosCardeais.N;
+import static comuns.PontosCardeais.NE;
+import static comuns.PontosCardeais.NO;
+import static comuns.PontosCardeais.O;
+import static comuns.PontosCardeais.S;
+import static comuns.PontosCardeais.SE;
+import static comuns.PontosCardeais.SO;
 
 /**Model implementa um ambiente na forma de um labirinto com paredes e com um
  * agente. A indexação da posição do agente é feita sempre por um 
