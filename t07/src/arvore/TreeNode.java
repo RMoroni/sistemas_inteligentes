@@ -18,7 +18,11 @@ public class TreeNode {
     private float gn;  // g(n) custo acumulado até o nó n
     private float hn;  // h(n) heurística a partir do nó n
     private Estado st;  // estado par <linha, coluna>
-    private int action; // acao que levou ao estado 
+    private int action; // acao que levou ao estado
+    
+    //variáveis para criar a árvore do modelo do ID3
+    private String caracteristica; // caracteristica que o nó armazena
+    private String acao; // acao que levou ao nó
 
     public TreeNode(TreeNode pai) {
         this.parent = pai;
@@ -70,9 +74,27 @@ public class TreeNode {
     public void setAction(int a) {
         this.action = a;
     }
+    
     public int getAction() {
         return this.action;
     }
+
+    public String getCaracteristica() {
+        return caracteristica;
+    }
+
+    public String getAcao() {
+        return acao;
+    }
+
+    public void setCaracteristica(String caracteristica) {
+        this.caracteristica = caracteristica;
+    }
+
+    public void setAcao(String acao) {
+        this.acao = acao;
+    }
+    
     /*
      * Este método instancia um nó filho de <this> e cria uma associação entre
      * o pai (this) e o filho

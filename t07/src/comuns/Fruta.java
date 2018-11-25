@@ -28,6 +28,10 @@ public class Fruta {
         return coluna;
     }
 
+    public int getEnergiaReal() {
+        return energiaReal;
+    }
+    
     public void setLinha(int linha) {
         this.linha = linha;
     }

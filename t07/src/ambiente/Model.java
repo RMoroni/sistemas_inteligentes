@@ -114,6 +114,14 @@ public class Model implements PontosCardeais {
     public int[] lerPos() {
         return pos;
     }
+    
+    /**Retorna a posição do objeto no labirinto
+     * @return vetor de 2 inteiros = par ordenado = [linha, coluna]
+     */
+    public int[] lerPosObj() {
+        return posObj;
+    }
+    
     /**Coloca o agente na posição solicitada pela ação ir, desde que seja
      * possível. Não pode ultrapassar os limites do labirinto nem estar em
      * uma posição ocupada por uma parede.

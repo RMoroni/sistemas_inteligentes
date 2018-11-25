@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Random;
 
 /**
  *
@@ -24,16 +25,24 @@ public class Agente implements PontosCardeais {
     int plan[] = new int[20];
     int tamPlan = 0; //armazena a qntdade de ações do plano do agente
     double custo = 0;
-    static int ct = -1;
-           
+    static int ct;
+    
+    //Estratégia 1: baseline
+    //Estratégia 2: fuzzy
+    int estrategia = 1;
+    double energia = 3.0;
+    
     public Agente(Model m) {
         this.model = m;
         prob = new Problema();
+        ct = -1;
         
         //crencas do agente: Estado inicial, objetivo e atual
-        estAtu = new Estado(8,0);
-        prob.defEstIni(8, 0);
-        prob.defEstObj(2, 8);
+        int pos[] = model.lerPos();
+        estAtu = new Estado(pos[0], pos[1]);
+        prob.defEstIni(pos[0], pos[1]);
+        pos = model.lerPosObj();
+        prob.defEstObj(pos[0], pos[1]);
         
         //crencas do agente a respeito do labirinto
         prob.criarLabirinto(9, 9);
@@ -49,29 +58,37 @@ public class Agente implements PontosCardeais {
      */
     public int deliberar(String busca) {
         
+        int vivo = 1;
         //se é primeiro ciclo, executa algoritmo de busca com base na formulação do problema
         if(ct == -1){
             executaBusca(busca);
             //conta as ações do plano do agente para poder executar o plano em seguida
             contaAcoesPlano();
         }else{       
-            
-            //imprime o que foi pedido
-            System.out.println("estado atual: " + estAtu.getString());
-            System.out.println("ct = " + ct + " de " + (tamPlan-1) + " acao escolhida = " + acao[plan[ct]]);
 
-            //executa o plano de acoes: SOMENTE UMA ACAO POR CHAMADA DESTE METODO
-            // Ao final do plano, verifique se o agente atingiu o estado objetivo verificando
-            // com o teste de objetivo
-            executarIr(plan[ct]);
+            if(estrategia == 1){
+                if(estrategiaBaseline() == 1 && energia > 1.5){
+                    System.out.println("estado atual: " + estAtu.getString());
+                    System.out.println("energia atual: " + energia);
+                    System.out.println("ct = " + ct + " de " + (tamPlan-1) + " acao escolhida = " + acao[plan[ct]]);
+                    //executa o plano de acoes: SOMENTE UMA ACAO POR CHAMADA DESTE METODO
+                    executarIr(plan[ct]);
+                    //atualiza o estado atual do agente
+                    prob.suc(estAtu, plan[ct]);
+                    energia -= 1.5;
+                }else{
+                    energia = 50.0;
+                    vivo = 0;
+                }
+                
+            }else{
+                criaModeloID3();
+            }
 
-            System.out.println();
-            //atualiza o estado atual do agente
-            prob.suc(estAtu, plan[ct]);
         }
         ct++;
         
-        if(ct == tamPlan)
+        if(ct == tamPlan || vivo == 0)
             return -1;
         else
             return 1;
@@ -109,6 +126,10 @@ public class Agente implements PontosCardeais {
         prob.crencaLabir.porParedeVertical(6, 7, 4);
         prob.crencaLabir.porParedeVertical(5, 6, 5);
         prob.crencaLabir.porParedeVertical(5, 7, 7);
+    }
+
+    public double getEnergia() {
+        return energia;
     }
     
     /**
@@ -149,8 +170,8 @@ public class Agente implements PontosCardeais {
     public void buscaCustoUniforme(){
         
         //inicia com as características do nó raiz(estado inicial do agente)
-        TreeNode raiz = new TreeNode(null); //raiz não tem pai
-        raiz.setState(new Estado(8,0)); //estado dela é a posição do agente
+        TreeNode raiz = new TreeNode(null); //raiz não tem pai       
+        raiz.setState(new Estado(estAtu.getLin(),estAtu.getCol())); //estado dela é a posição do agente
         raiz.setAction(-1);
         raiz.setGn(0); //custo 0
         raiz.setHn(0);
@@ -250,7 +271,7 @@ public class Agente implements PontosCardeais {
         
         //inicia com as características do nó raiz(estado inicial do agente)
         TreeNode raiz = new TreeNode(null); //raiz não tem pai
-        raiz.setState(new Estado(8,0)); //estado dela é a posição do agente
+        raiz.setState(new Estado(estAtu.getLin(),estAtu.getCol())); //estado dela é a posição do agente
         raiz.setAction(-1);
         raiz.setGnHn(0, calculaHeuristica(h, raiz));
         
@@ -354,4 +375,177 @@ public class Agente implements PontosCardeais {
         }
         return hn;
     }
-} 
+
+    /**
+     * Executa estratégia baseline
+     * @return 1 se o agente continua vivo e 0 se o agente morreu
+     */
+    public int estrategiaBaseline(){
+    
+        Random gerador = new Random();
+        int comerFruta = gerador.nextInt(2);
+        if(comerFruta == 1){
+            Fruta fruta = model.labir.getFruta(estAtu.getLin(), estAtu.getCol());
+            if(fruta.getEnergiaReal() == 0)
+                return 0;
+            else{
+                energia += fruta.getEnergiaReal();
+                return 1;
+            }
+        }
+        return 1;
+    }
+    
+    /**
+     * Cria modelo ID3
+     */
+    public void criaModeloID3(){
+        
+        String rgb[] = {"R", "G", "B"};
+        
+        //inicia com as características do nó raiz
+        TreeNode raiz = new TreeNode(null); //raiz não tem pai
+        raiz.setCaracteristica("c1");
+        raiz.setAcao(null); //raiz não tem ação antecedente
+        
+        TreeNode pai = raiz;       
+        TreeNode node = pai.addChild();
+        node.setCaracteristica("c3");
+        node.setAcao("R");
+        node = pai.addChild();
+        node.setCaracteristica("c0");
+        node.setAcao("G");
+        node = pai.addChild();
+        node.setCaracteristica("c2");
+        node.setAcao("B");
+        
+        pai = pai.getChildren().get(0);
+        for(int i = 0; i < 3; i++){
+            node = pai.addChild();
+            node.setCaracteristica("c2");
+            node.setAcao(rgb[i]); 
+        }
+        
+        pai = pai.getChildren().get(0);
+        node = pai.addChild();
+        node.setCaracteristica("4");
+        node.setAcao("R");
+        node = pai.addChild();
+        node.setCaracteristica("2");
+        node.setAcao("G");
+        node = pai.addChild();
+        node.setCaracteristica("2");
+        node.setAcao("B");
+        
+        pai = pai.getParent().getChildren().get(1);
+        node = pai.addChild();
+        node.setCaracteristica("2");
+        node.setAcao("R");
+        node = pai.addChild();
+        node.setCaracteristica("2");
+        node.setAcao("G");
+        node = pai.addChild();
+        node.setCaracteristica("0");
+        node.setAcao("B");
+        
+        pai = pai.getParent().getChildren().get(2);
+        node = pai.addChild();
+        node.setCaracteristica("2");
+        node.setAcao("R");
+        node = pai.addChild();
+        node.setCaracteristica("4");
+        node.setAcao("G");
+        node = pai.addChild();
+        node.setCaracteristica("2");
+        node.setAcao("B");
+        
+        pai = pai.getParent().getParent().getChildren().get(1);
+        node = pai.addChild();
+        node.setCaracteristica("c3");
+        node.setAcao("K");
+        node = pai.addChild();
+        node.setCaracteristica("0");
+        node.setAcao("W");
+        
+        pai = pai.getChildren().get(0);
+        for(int i = 0; i < 3; i++){
+            node = pai.addChild();
+            node.setCaracteristica("c2");
+            node.setAcao(rgb[i]); 
+        }
+        
+        pai = pai.getChildren().get(0);
+        node = pai.addChild();
+        node.setCaracteristica("2");
+        node.setAcao("R");
+        node = pai.addChild();
+        node.setCaracteristica("2");
+        node.setAcao("G");
+        node = pai.addChild();
+        node.setCaracteristica("0");
+        node.setAcao("B");
+        
+        pai = pai.getParent().getChildren().get(1);
+        node = pai.addChild();
+        node.setCaracteristica("2");
+        node.setAcao("R");
+        node = pai.addChild();
+        node.setCaracteristica("4");
+        node.setAcao("G");
+        node = pai.addChild();
+        node.setCaracteristica("2");
+        node.setAcao("B");
+        
+        pai = pai.getParent().getChildren().get(2);
+        node = pai.addChild();
+        node.setCaracteristica("0");
+        node.setAcao("R");
+        node = pai.addChild();
+        node.setCaracteristica("2");
+        node.setAcao("G");
+        node = pai.addChild();
+        node.setCaracteristica("2");
+        node.setAcao("B");
+        
+        pai = pai.getParent().getParent().getParent().getChildren().get(2);
+        for(int i = 0; i < 3; i++){
+            node = pai.addChild();
+            node.setCaracteristica("c3");
+            node.setAcao(rgb[i]); 
+        }
+        
+        pai = pai.getChildren().get(0);
+        node = pai.addChild();
+        node.setCaracteristica("2");
+        node.setAcao("R");
+        node = pai.addChild();
+        node.setCaracteristica("0");
+        node.setAcao("G");
+        node = pai.addChild();
+        node.setCaracteristica("2");
+        node.setAcao("B");
+        
+        pai = pai.getParent().getChildren().get(1);
+        node = pai.addChild();
+        node.setCaracteristica("0");
+        node.setAcao("R");
+        node = pai.addChild();
+        node.setCaracteristica("2");
+        node.setAcao("G");
+        node = pai.addChild();
+        node.setCaracteristica("2");
+        node.setAcao("B");
+        
+        pai = pai.getParent().getChildren().get(2);
+        node = pai.addChild();
+        node.setCaracteristica("2");
+        node.setAcao("R");
+        node = pai.addChild();
+        node.setCaracteristica("2");
+        node.setAcao("G");
+        node = pai.addChild();
+        node.setCaracteristica("4");
+        node.setAcao("B");
+    }
+
+}
