@@ -10,6 +10,9 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Random;
+import net.sourceforge.jFuzzyLogic.FIS;
+import net.sourceforge.jFuzzyLogic.plot.JFuzzyChart;
+import net.sourceforge.jFuzzyLogic.rule.Variable;
 
 /**
  *
@@ -82,7 +85,50 @@ public class Agente implements PontosCardeais {
                 }
                 
             }else{
-                criaModeloID3();
+                System.out.println("estado atual: " + estAtu.getString());
+                System.out.println("energia atual: " + energia);
+                System.out.println("ct = " + ct + " de " + (tamPlan-1) + " acao escolhida = " + acao[plan[ct]]);
+                executarIr(plan[ct]);
+                prob.suc(estAtu, plan[ct]);
+                energia -= 1.5; //como ele andou, decrementa
+                                
+                Fruta fruta = prob.crencaLabir.getFruta(estAtu.getLin(), estAtu.getCol()); //pega a fruta na posição do agente
+                int energy = criaModeloID3(fruta); //encontra o valor da fruta de acordo com o modelo ID3
+                
+                String fileName = "tipper.fcl";                           
+                FIS fis = FIS.load(fileName, true); //abre o arquivo de regras
+
+                // Error while loading?
+                if (fis == null) {
+                    System.err.println("Can't load file: '" + fileName + "'");
+                    System.exit(0);
+                }
+
+                // Show 
+                JFuzzyChart.get().chart(fis);
+
+                // Set inputs
+                fis.setVariable("energy", energy);
+
+                // Evaluate
+                fis.evaluate();
+
+                // Show output variable's chart
+                Variable eat = fis.getVariable("eat");
+
+                JFuzzyChart.get().chart(eat, eat.getDefuzzifier(), true);
+
+                // Print ruleSet
+                System.out.println(fis);
+
+                //se a decisão do Fuzzy for sim, coloca a energia da fruta no agente
+                if (eat.getMembership("yes") == 1){
+                    energia += fruta.getEnergiaReal();
+                }
+                
+                // print membership degree for output terms
+                System.out.println("no=" + eat.getMembership("no"));
+                System.out.println("yes=" + eat.getMembership("yes"));             
             }
 
         }
@@ -399,9 +445,10 @@ public class Agente implements PontosCardeais {
     /**
      * Cria modelo ID3
      */
-    public void criaModeloID3(){
+    public int criaModeloID3(Fruta fruta){
         
         String rgb[] = {"R", "G", "B"};
+        String rgb_fruta[] = {fruta.caracteristica[0], fruta.caracteristica[1],fruta.caracteristica[2],fruta.caracteristica[3]};
         
         //inicia com as características do nó raiz
         TreeNode raiz = new TreeNode(null); //raiz não tem pai
@@ -546,6 +593,28 @@ public class Agente implements PontosCardeais {
         node = pai.addChild();
         node.setCaracteristica("4");
         node.setAcao("B");
+        
+        //percorre a árvore
+        TreeNode aux = raiz;
+        List<TreeNode> filhos = new ArrayList<>();
+        while (!aux.getChildren().isEmpty()){
+            filhos = aux.getChildren();
+            String carac;
+            if (aux.getCaracteristica().equals("c0")) {
+                carac = rgb_fruta[0];
+            } else if (aux.getCaracteristica().equals("c1")) {
+                carac = rgb_fruta[1];
+            } else if (aux.getCaracteristica().equals("c2")) {
+                carac = rgb_fruta[2];
+            } else {
+                carac = rgb_fruta[3];
+            }
+            for (TreeNode no : filhos){
+                if (no.getAcao().equals(carac)){
+                    aux = no;
+                }
+            }  
+        }
+        return 0;
     }
-
 }
