@@ -85,17 +85,11 @@ public class Agente implements PontosCardeais {
                 }
                 
             }else{
-                System.out.println("estado atual: " + estAtu.getString());
-                System.out.println("energia atual: " + energia);
-                System.out.println("ct = " + ct + " de " + (tamPlan-1) + " acao escolhida = " + acao[plan[ct]]);
-                executarIr(plan[ct]);
-                prob.suc(estAtu, plan[ct]);
-                energia -= 1.5; //como ele andou, decrementa
-                                
-                Fruta fruta = prob.crencaLabir.getFruta(estAtu.getLin(), estAtu.getCol()); //pega a fruta na posição do agente
-                int energy = criaModeloID3(fruta); //encontra o valor da fruta de acordo com o modelo ID3
                 
-                String fileName = "tipper.fcl";                           
+                Fruta fruta = model.labir.getFruta(estAtu.getLin(), estAtu.getCol());
+                int energy = criaModeloID3(fruta); //encontra o valor da fruta de acordo com o modelo ID3
+                              
+                String fileName = "rules.fcl";                           
                 FIS fis = FIS.load(fileName, true); //abre o arquivo de regras
 
                 // Error while loading?
@@ -105,10 +99,11 @@ public class Agente implements PontosCardeais {
                 }
 
                 // Show 
-                JFuzzyChart.get().chart(fis);
+                //JFuzzyChart.get().chart(fis);
 
                 // Set inputs
-                fis.setVariable("energy", energy);
+                fis.setVariable("energyFruit", energy);
+                fis.setVariable("energyAgent", energia);
 
                 // Evaluate
                 fis.evaluate();
@@ -116,19 +111,33 @@ public class Agente implements PontosCardeais {
                 // Show output variable's chart
                 Variable eat = fis.getVariable("eat");
 
-                JFuzzyChart.get().chart(eat, eat.getDefuzzifier(), true);
+                //JFuzzyChart.get().chart(eat, eat.getDefuzzifier(), true);
 
                 // Print ruleSet
-                System.out.println(fis);
+                //System.out.println(fis);
 
+                System.out.println(fis.getVariable("eat"));
                 //se a decisão do Fuzzy for sim, coloca a energia da fruta no agente
-                if (eat.getMembership("yes") == 1){
-                    energia += fruta.getEnergiaReal();
+                if (eat.getMembership("yes") > 0.5 && eat.getMembership("no") < 0.3){
+                    if(fruta.getEnergiaReal() == 0){
+                        energia = 50.0;
+                        vivo = 0;
+                    }else
+                        energia += fruta.getEnergiaReal();
                 }
                 
                 // print membership degree for output terms
-                System.out.println("no=" + eat.getMembership("no"));
-                System.out.println("yes=" + eat.getMembership("yes"));             
+                //System.out.println("no=" + eat.getMembership("no"));
+                //System.out.println("yes=" + eat.getMembership("yes"));
+                
+                if(vivo == 1 && energia > 1.5){
+                    System.out.println("estado atual: " + estAtu.getString());
+                    System.out.println("energia atual: " + energia);
+                    System.out.println("ct = " + ct + " de " + (tamPlan-1) + " acao escolhida = " + acao[plan[ct]]);
+                    executarIr(plan[ct]);
+                    prob.suc(estAtu, plan[ct]);
+                    energia -= 1.5; //como ele andou, decrementa
+                }
             }
 
         }
@@ -447,8 +456,8 @@ public class Agente implements PontosCardeais {
      */
     public int criaModeloID3(Fruta fruta){
         
-        String rgb[] = {"R", "G", "B"};
-        String rgb_fruta[] = {fruta.caracteristica[0], fruta.caracteristica[1],fruta.caracteristica[2],fruta.caracteristica[3]};
+        String rgb[] = {"R", "G", "B"};      
+        String rgb_fruta[] = fruta.getCaracteristica();
         
         //inicia com as características do nó raiz
         TreeNode raiz = new TreeNode(null); //raiz não tem pai
@@ -615,6 +624,6 @@ public class Agente implements PontosCardeais {
                 }
             }  
         }
-        return 0;
+        return Integer.parseInt(aux.getCaracteristica());
     }
 }

@@ -31,6 +31,10 @@ public class Fruta {
     public int getEnergiaReal() {
         return energiaReal;
     }
+
+    public String[] getCaracteristica() {
+        return caracteristica;
+    }
     
     public void setLinha(int linha) {
         this.linha = linha;
