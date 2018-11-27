@@ -22,6 +22,7 @@ FUZZIFY current_energy
 		TERM bad := (0, 1) (2, 0) ;
 		TERM good := (1, 0) (2, 1)(6, 1) (10, 0) ;
 		TERM exc := (6, 0) (10, 1) ;
+END_FUZZIFY
 
 //'saída'
 DEFUZZIFY eat
