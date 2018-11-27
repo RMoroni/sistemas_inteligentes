@@ -32,7 +32,7 @@ public class Agente implements PontosCardeais {
     
     //Estratégia 1: baseline
     //Estratégia 2: fuzzy
-    int estrategia = 1;
+    int estrategia = 2;
     double energia = 3.0;
     
     public Agente(Model m) {

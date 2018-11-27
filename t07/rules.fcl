@@ -2,13 +2,8 @@ FUNCTION_BLOCK energy
 
 //variaveis de entrada
 VAR_INPUT
-<<<<<<< HEAD
 		energyFruit : REAL;
 		energyAgent : REAL;
-=======
-		energy : REAL
-		current_energy : REAL
->>>>>>> remotes/origin/master
 END_VAR
 
 //saída
@@ -17,25 +12,15 @@ VAR_OUTPUT
 END_VAR
 
 //define o que é ruim, bom e exc para valores de energia
-<<<<<<< HEAD
 FUZZIFY energyFruit
-=======
-FUZZIFY energy
->>>>>>> remotes/origin/master
 		TERM bad := (0, 1) (2, 0) ;
 		TERM good := (1, 0) (2, 1) (3, 1) (4, 0) ;
 		TERM exc := (3, 0) (4, 1) ;
 END_FUZZIFY
 
-<<<<<<< HEAD
 FUZZIFY energyAgent
 		TERM bad := (0, 1) (2, 0) ;
 		TERM good := (1, 0) (2, 1) (6, 1) (10, 0) ;
-=======
-FUZZIFY current_energy
-		TERM bad := (0, 1) (2, 0) ;
-		TERM good := (1, 0) (2, 1)(6, 1) (10, 0) ;
->>>>>>> remotes/origin/master
 		TERM exc := (6, 0) (10, 1) ;
 END_FUZZIFY
 
@@ -53,17 +38,10 @@ RULEBLOCK No1
 		ACT : MIN;
 		ACCU : MAX;
 		
-<<<<<<< HEAD
 		RULE 1 : IF energyFruit IS bad AND (energyAgent IS good OR energyAgent IS exc) THEN eat IS no;
 		RULE 2 : IF energyFruit IS good AND (energyAgent IS good OR energyAgent IS exc) THEN eat IS yes;
 		RULE 3 : IF energyFruit IS exc THEN eat IS yes;
 		RULE 4 : IF energyAgent IS bad THEN eat IS yes;
-=======
-		RULE 1 : IF energy IS bad AND (current_energy IS good OR current_energy IS exc) THEN eat IS no;
-		RULE 2 : IF energy IS good AND (current_energy IS good OR current_energy IS exc) THEN eat IS yes;
-		RULE 3 : IF energy IS exc THEN eat IS yes;
-		RULE 4 : IF current_energy IS bad THEN eat IS yes;
->>>>>>> remotes/origin/master
 END_RULEBLOCK
 
 END_FUNCTION_BLOCK
