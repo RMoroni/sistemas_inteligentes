@@ -32,7 +32,7 @@ public class Agente implements PontosCardeais {
     
     //Estratégia 1: baseline
     //Estratégia 2: fuzzy
-    int estrategia = 2;
+    int estrategia = 1;
     double energia = 3.0;
     
     public Agente(Model m) {
@@ -129,23 +129,6 @@ public class Agente implements PontosCardeais {
                         vivo = 0;
                     }else
                         energia += fruta.getEnergiaReal();
-                }
-                executarIr(plan[ct]);
-                prob.suc(estAtu, plan[ct]);
-                energia -= 1.5; //como ele andou, decrementa
-                if (energia < 0)
-                    vivo = 0;
-                // print membership degree for output terms
-                //System.out.println("no=" + eat.getMembership("no"));
-                //System.out.println("yes=" + eat.getMembership("yes"));
-                
-                if(vivo == 1 && energia > 1.5){
-                    System.out.println("estado atual: " + estAtu.getString());
-                    System.out.println("energia atual: " + energia);
-                    System.out.println("ct = " + ct + " de " + (tamPlan-1) + " acao escolhida = " + acao[plan[ct]]);
-                    executarIr(plan[ct]);
-                    prob.suc(estAtu, plan[ct]);
-                    energia -= 1.5; //como ele andou, decrementa
                 }
             }
 
