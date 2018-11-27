@@ -85,6 +85,10 @@ public class Agente implements PontosCardeais {
                 }
                 
             }else{
+
+                System.out.println("estado atual: " + estAtu.getString());
+                System.out.println("energia atual: " + energia);
+                System.out.println("ct = " + ct + " de " + (tamPlan-1) + " acao escolhida = " + acao[plan[ct]]);                
                 
                 Fruta fruta = model.labir.getFruta(estAtu.getLin(), estAtu.getCol());
                 int energy = criaModeloID3(fruta); //encontra o valor da fruta de acordo com o modelo ID3
@@ -118,6 +122,7 @@ public class Agente implements PontosCardeais {
 
                 System.out.println(fis.getVariable("eat"));
                 //se a decisão do Fuzzy for sim, coloca a energia da fruta no agente
+
                 if (eat.getMembership("yes") > 0.5 && eat.getMembership("no") < 0.3){
                     if(fruta.getEnergiaReal() == 0){
                         energia = 50.0;
@@ -125,7 +130,11 @@ public class Agente implements PontosCardeais {
                     }else
                         energia += fruta.getEnergiaReal();
                 }
-                
+                executarIr(plan[ct]);
+                prob.suc(estAtu, plan[ct]);
+                energia -= 1.5; //como ele andou, decrementa
+                if (energia < 0)
+                    vivo = 0;
                 // print membership degree for output terms
                 //System.out.println("no=" + eat.getMembership("no"));
                 //System.out.println("yes=" + eat.getMembership("yes"));
